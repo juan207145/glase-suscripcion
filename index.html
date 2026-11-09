@@ -85,7 +85,9 @@
     .nota{margin-top:18px;font-size:11px;color:#6b7389}
 
     /* ===== HERO ENRIQUECIDO ===== */
-    .hero-red{position:absolute;top:0;left:0;width:100%;height:100%;z-index:1;pointer-events:none}
+    .form-red{position:absolute;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:.85}
+    .suscripcion > *:not(.form-red){position:relative;z-index:1}
+    .suscripcion input[type=email]{background:rgba(10,17,38,.75)}
     .en-vivo{display:inline-flex;align-items:center;gap:10px;padding:7px 14px 7px 10px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid var(--linea);font-size:12px;color:#d3d8e5}
     .en-vivo i{width:8px;height:8px;border-radius:50%;background:#2ecc71;box-shadow:0 0 0 0 rgba(46,204,113,.6);animation:pulso 1.8s infinite}
     @keyframes pulso{70%{box-shadow:0 0 0 10px rgba(46,204,113,0)}100%{box-shadow:0 0 0 0 rgba(46,204,113,0)}}
@@ -231,7 +233,7 @@
       .suscripcion{box-shadow:0 16px 36px rgba(0,0,0,.45)}
       .hero{min-height:auto;padding-top:100px}
       .scroll-indicador{display:none}
-      .hero-red,.chip{display:none}
+      .chip{display:none}
       .borde-anim{animation:none}
       .hero h1{min-height:2.3em}
     }
@@ -300,7 +302,6 @@
 
   <!-- HERO -->
   <header class="hero" id="inicio">
-    <canvas id="red" class="hero-red" aria-hidden="true"></canvas>
     <div class="hero-fondo"><img src="Barcelona_Champions.jpg" srcset="Barcelona_Champions_movil.jpg 800w, Barcelona_Champions.jpg 1600w" sizes="100vw" alt="" fetchpriority="high" decoding="async"></div>
     <div class="contenedor">
       <div>
@@ -325,6 +326,7 @@
         <div class="chip chip-b"><span class="ico">🔒</span><div><b>Cero spam</b><small>Solo contenido útil</small></div></div>
         <div class="borde-anim" id="tilt">
           <div class="suscripcion" id="suscribirse">
+            <canvas id="red" class="form-red" aria-hidden="true"></canvas>
             <img class="escudo" src="Barcelona_Logo.jpg" alt="Escudo FC Barcelona" width="92" height="92">
             <span class="eyebrow">Únete ahora</span>
             <h2>Suscríbete al boletín</h2>
@@ -564,31 +566,38 @@
       tilt.addEventListener("mouseleave", () => tilt.style.transform = "");
     }
 
-    // Red de partículas blaugrana en el hero (solo escritorio)
-    if (escritorio && !sinMovimiento) {
+    // Red de partículas blaugrana dentro de la tarjeta del formulario
+    if (!sinMovimiento) {
       const cv = document.getElementById("red"), ctx = cv.getContext("2d");
+      const zona = document.getElementById("tilt");
       const colores = ["#3d7fd6", "#d0306f", "#e8cf7a"];
-      let W, H, puntos = [], mouse = { x: -999, y: -999 }, activo = true;
+      let W = 0, H = 0, puntos = [], mouse = { x: -999, y: -999 }, activo = true;
       const ajustar = () => {
-        W = cv.width = cv.offsetWidth; H = cv.height = cv.offsetHeight;
-        puntos = Array.from({ length: 55 }, () => ({
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        W = cv.clientWidth; H = cv.clientHeight;
+        if (!W || !H) return;
+        cv.width = W * dpr; cv.height = H * dpr;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        const cantidad = Math.round(W * H / (escritorio ? 6500 : 9000));
+        puntos = Array.from({ length: cantidad }, () => ({
           x: Math.random() * W, y: Math.random() * H,
-          vx: (Math.random() - .5) * .4, vy: (Math.random() - .5) * .4,
-          c: colores[Math.floor(Math.random() * 3)], r: 1.2 + Math.random() * 1.8
+          vx: (Math.random() - .5) * .35, vy: (Math.random() - .5) * .35,
+          c: colores[Math.floor(Math.random() * 3)], r: 1 + Math.random() * 1.6
         }));
       };
-      ajustar(); window.addEventListener("resize", ajustar);
-      document.querySelector(".hero").addEventListener("mousemove", e => {
+      new ResizeObserver(ajustar).observe(cv);
+      zona.addEventListener("mousemove", e => {
         const r = cv.getBoundingClientRect(); mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top;
       });
+      zona.addEventListener("mouseleave", () => { mouse.x = mouse.y = -999; });
       new IntersectionObserver(([e]) => activo = e.isIntersecting).observe(cv);
       (function dibujar() {
         requestAnimationFrame(dibujar);
-        if (!activo) return;
+        if (!activo || !W) return;
         ctx.clearRect(0, 0, W, H);
         for (const p of puntos) {
           const dx = p.x - mouse.x, dy = p.y - mouse.y, d = Math.hypot(dx, dy);
-          if (d < 110) { p.x += dx / d * 1.6; p.y += dy / d * 1.6; }
+          if (d < 80 && d > 0) { p.x += dx / d * 1.4; p.y += dy / d * 1.4; }
           p.x += p.vx; p.y += p.vy;
           if (p.x < 0 || p.x > W) p.vx *= -1;
           if (p.y < 0 || p.y > H) p.vy *= -1;
@@ -596,8 +605,8 @@
         }
         for (let i = 0; i < puntos.length; i++) for (let j = i + 1; j < puntos.length; j++) {
           const a = puntos[i], b = puntos[j], d = Math.hypot(a.x - b.x, a.y - b.y);
-          if (d < 130) {
-            ctx.strokeStyle = `rgba(232,207,122,${(1 - d / 130) * .25})`;
+          if (d < 95) {
+            ctx.strokeStyle = `rgba(232,207,122,${(1 - d / 95) * .3})`;
             ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
           }
         }
