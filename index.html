@@ -3,197 +3,394 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CULÉ ZONE · Newsletter</title>
+  <title>CULÉ ZONE · Newsletter blaugrana</title>
+  <meta name="description" content="Newsletter de aficionados del Barça: previas, resultados e historia del club en tu correo.">
   <link rel="icon" href="Barcelona_Logo.jpg">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <link rel="preload" as="image" href="Barcelona_Champions.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script defer src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <style>
-    :root {
+    :root{
       --azul:#004d98; --grana:#a50044; --oro:#c9a227; --oro-claro:#e8cf7a;
-      --noche:#070d1f; --texto:#e6e9f2; --suave:#9aa3b8;
+      --noche:#070d1f; --noche-2:#0d1630; --texto:#e6e9f2; --suave:#9aa3b8; --linea:rgba(255,255,255,.1);
     }
-    * { box-sizing:border-box; margin:0; padding:0; }
-    body {
-      font-family:'Inter', sans-serif; color:var(--texto);
-      min-height:100vh; overflow-x:hidden;
-      display:flex; align-items:center; justify-content:center;
-      padding:24px 16px; background:var(--noche); position:relative;
-    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:'Inter',sans-serif;color:var(--texto);background:var(--noche);overflow-x:hidden;line-height:1.6}
+    img{display:block;max-width:100%}
+    a{color:inherit;text-decoration:none}
+    .contenedor{width:100%;max-width:1140px;margin:0 auto;padding:0 20px}
+    .eyebrow{font-size:11px;letter-spacing:5px;text-transform:uppercase;color:var(--oro);font-weight:600}
+    .titulo{font-family:'Playfair Display',serif;font-size:clamp(28px,4vw,42px);line-height:1.15;color:#fff;margin:10px 0 14px}
+    .bajada{color:var(--suave);font-weight:300;max-width:560px}
+    section{padding:96px 0}
 
-    /* ---------- Fondo animado ---------- */
-    .luz { position:fixed; border-radius:50%; filter:blur(90px); opacity:.5; z-index:0; }
-    .luz.a { width:520px; height:520px; background:var(--azul); top:-140px; left:-120px; animation:flotarA 16s ease-in-out infinite alternate; }
-    .luz.b { width:480px; height:480px; background:var(--grana); bottom:-160px; right:-120px; animation:flotarB 18s ease-in-out infinite alternate; }
-    @keyframes flotarA { to { transform:translate(140px, 90px) scale(1.15); } }
-    @keyframes flotarB { to { transform:translate(-120px, -80px) scale(1.1); } }
-    .franjas {
-      position:fixed; inset:0; z-index:0; opacity:.06;
-      background:repeating-linear-gradient(90deg, #fff 0 1px, transparent 1px 90px);
-      animation:deslizar 30s linear infinite;
-    }
-    @keyframes deslizar { to { background-position:900px 0; } }
-    .particula { position:fixed; width:3px; height:3px; border-radius:50%; background:var(--oro-claro); z-index:1; opacity:0; animation:destello linear infinite; }
-    @keyframes destello { 0% { opacity:0; transform:translateY(0); } 20% { opacity:.9; } 100% { opacity:0; transform:translateY(-160px); } }
+    /* Aparición al hacer scroll */
+    .reveal{opacity:0;transform:translateY(30px);transition:opacity .9s cubic-bezier(.16,1,.3,1),transform .9s cubic-bezier(.16,1,.3,1)}
+    .reveal.visible{opacity:1;transform:none}
+    .r2{transition-delay:.12s}.r3{transition-delay:.24s}.r4{transition-delay:.36s}.r5{transition-delay:.48s}
 
-    /* ---------- Tarjeta en dos columnas ---------- */
-    .card {
-      position:relative; z-index:2;
-      width:100%; max-width:960px;
-      display:grid; grid-template-columns:1.1fr 1fr;
-      border-radius:24px; overflow:hidden;
-      background:linear-gradient(160deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
-      border:1px solid rgba(255,255,255,.12);
-      backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
-      box-shadow:0 30px 80px rgba(0,0,0,.6);
-      animation:aparecer 1.1s cubic-bezier(.16,1,.3,1) both;
-    }
-    @keyframes aparecer { from { opacity:0; transform:translateY(40px); filter:blur(6px); } to { opacity:1; transform:none; filter:none; } }
+    /* ---------- NAV ---------- */
+    nav{position:fixed;top:0;left:0;right:0;z-index:50;transition:background .3s,border-color .3s;border-bottom:1px solid transparent}
+    nav.solida{background:rgba(7,13,31,.92);border-color:var(--linea)}
+    nav .contenedor{display:flex;align-items:center;justify-content:space-between;height:70px}
+    .marca{display:flex;align-items:center;gap:12px;font-family:'Playfair Display',serif;font-size:20px;letter-spacing:1px;color:#fff}
+    .marca img{width:38px;height:38px;border-radius:9px;object-fit:cover;border:1px solid rgba(201,162,39,.6)}
+    .menu{display:flex;gap:28px;font-size:14px;color:var(--suave)}
+    .menu a{position:relative;transition:color .2s}
+    .menu a::after{content:"";position:absolute;left:0;bottom:-4px;width:0;height:2px;background:var(--oro);transition:width .3s}
+    .menu a:hover{color:#fff}.menu a:hover::after{width:100%}
+    .btn-nav{font-size:12px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;padding:10px 18px;border-radius:999px;border:1px solid var(--oro);color:var(--oro-claro);transition:background .25s,color .25s}
+    .btn-nav:hover{background:var(--oro);color:var(--noche)}
 
-    /* Panel de la foto */
-    .foto { position:relative; min-height:560px; overflow:hidden; }
-    .foto img {
-      position:absolute; inset:0; width:100%; height:100%;
-      object-fit:cover; object-position:center 30%;
-      animation:kenburns 20s ease-in-out infinite alternate;
-    }
-    @keyframes kenburns { from { transform:scale(1.05); } to { transform:scale(1.18) translateX(-3%); } }
-    .foto::after {
-      content:""; position:absolute; inset:0;
-      background:
-        linear-gradient(0deg, rgba(7,13,31,.95) 0%, rgba(7,13,31,.35) 45%, rgba(7,13,31,.15) 100%),
-        linear-gradient(90deg, rgba(0,77,152,.35), rgba(165,0,68,.25));
-    }
-    .foto .leyenda { position:absolute; left:36px; right:36px; bottom:34px; z-index:2; }
-    .foto .leyenda .eyebrow { display:block; margin-bottom:10px; }
-    .foto .leyenda h2 { font-family:'Playfair Display', serif; font-size:32px; line-height:1.15; color:#fff; font-weight:700; }
-    .foto .leyenda p { margin-top:10px; font-size:13px; font-weight:300; color:#c9cfdd; line-height:1.6; max-width:340px; }
-    .linea-oro { position:absolute; top:0; bottom:0; right:0; width:2px; z-index:2;
-      background:linear-gradient(180deg, transparent, var(--oro), transparent); animation:barrido 4s ease-in-out infinite; }
-    @keyframes barrido { 0%,100% { opacity:.35; } 50% { opacity:1; } }
+    /* ---------- HERO ---------- */
+    .hero{position:relative;min-height:100vh;display:flex;align-items:center;padding:110px 0 70px;overflow:hidden}
+    .hero-fondo{position:absolute;inset:0;z-index:0}
+    .hero-fondo img{width:100%;height:100%;object-fit:cover;object-position:center 30%;animation:zoom 24s ease-in-out infinite alternate;will-change:transform}
+    @keyframes zoom{from{transform:scale(1.04)}to{transform:scale(1.14)}}
+    .hero-fondo::after{content:"";position:absolute;inset:0;
+      background:linear-gradient(90deg,rgba(7,13,31,.96) 0%,rgba(7,13,31,.82) 45%,rgba(7,13,31,.55) 100%),
+                 linear-gradient(0deg,var(--noche) 0%,transparent 35%)}
+    .hero .contenedor{position:relative;z-index:1;display:grid;grid-template-columns:1.15fr .85fr;gap:56px;align-items:center}
+    .hero h1{font-family:'Playfair Display',serif;font-size:clamp(38px,6vw,68px);line-height:1.05;color:#fff;margin:16px 0 20px}
+    .hero h1 em{font-style:normal;background:linear-gradient(90deg,#4f8fe0,#e0457f,var(--oro-claro));-webkit-background-clip:text;background-clip:text;color:transparent;background-size:200% 100%;animation:brillo 6s linear infinite}
+    @keyframes brillo{to{background-position:200% 0}}
+    .hero p.lead{font-size:17px;font-weight:300;color:#c4cadb;max-width:520px}
+    .datos{display:flex;gap:36px;margin-top:36px;flex-wrap:wrap}
+    .dato strong{display:block;font-family:'Playfair Display',serif;font-size:30px;color:#fff}
+    .dato span{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--suave)}
 
-    /* Panel del formulario */
-    .panel { padding:52px 44px 40px; text-align:center; display:flex; flex-direction:column; justify-content:center; }
+    /* Tarjeta de suscripción */
+    .suscripcion{background:rgba(13,22,48,.85);border:1px solid var(--linea);border-radius:22px;padding:40px 34px;text-align:center;box-shadow:0 30px 70px rgba(0,0,0,.5);position:relative}
+    .suscripcion::before{content:"";position:absolute;top:0;left:15%;right:15%;height:2px;background:linear-gradient(90deg,transparent,var(--oro),transparent)}
+    .escudo{width:92px;height:92px;margin:0 auto 18px;border-radius:20px;object-fit:cover;border:2px solid rgba(201,162,39,.7);animation:levitar 5s ease-in-out infinite;box-shadow:0 12px 30px rgba(0,0,0,.45)}
+    @keyframes levitar{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+    .suscripcion h2{font-family:'Playfair Display',serif;font-size:26px;color:#fff;margin:8px 0 8px}
+    .suscripcion p{font-size:14px;color:var(--suave);font-weight:300;margin-bottom:24px}
+    form{display:flex;flex-direction:column;gap:12px}
+    input[type=email]{width:100%;padding:15px 18px;font-size:15px;font-family:inherit;color:#fff;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);border-radius:12px;outline:none;transition:border-color .3s,box-shadow .3s}
+    input::placeholder{color:#7d869c}
+    input[type=email]:focus{border-color:var(--oro);box-shadow:0 0 0 4px rgba(201,162,39,.15)}
+    .btn{position:relative;overflow:hidden;display:inline-block;padding:15px 28px;font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase;font-family:inherit;color:#fff;border:none;border-radius:12px;cursor:pointer;background:linear-gradient(90deg,var(--azul),var(--grana));transition:transform .25s,box-shadow .25s}
+    .btn::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(110deg,transparent,rgba(255,255,255,.35),transparent);animation:reflejo 3.5s ease-in-out infinite}
+    @keyframes reflejo{0%{left:-60%}60%,100%{left:130%}}
+    .btn:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(165,0,68,.4)}
+    .btn:disabled{opacity:.6;cursor:wait}
+    #estado{margin-top:16px;font-size:13px;min-height:20px}
+    .ok{color:var(--oro-claro)}.error{color:#ff8a9e;animation:sacudir .4s}
+    @keyframes sacudir{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+    .nota{margin-top:18px;font-size:11px;color:#6b7389}
 
-    .reveal { opacity:0; animation:subir .9s cubic-bezier(.16,1,.3,1) forwards; }
-    .d1 { animation-delay:.3s; } .d2 { animation-delay:.45s; } .d3 { animation-delay:.6s; }
-    .d4 { animation-delay:.75s; } .d5 { animation-delay:.9s; }
-    @keyframes subir { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:none; } }
+    .scroll-indicador{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);z-index:1;width:24px;height:38px;border:2px solid rgba(255,255,255,.35);border-radius:14px}
+    .scroll-indicador::after{content:"";position:absolute;left:50%;top:7px;width:4px;height:8px;margin-left:-2px;border-radius:2px;background:var(--oro);animation:rueda 1.8s ease-in-out infinite}
+    @keyframes rueda{0%{opacity:0;transform:translateY(0)}40%{opacity:1}100%{opacity:0;transform:translateY(12px)}}
 
-    .escudo { width:104px; height:104px; margin:0 auto 22px; position:relative; }
-    .escudo img {
-      width:100%; height:100%; object-fit:cover; border-radius:22px;
-      border:2px solid rgba(201,162,39,.7);
-      box-shadow:0 10px 30px rgba(0,0,0,.45);
-      animation:levitar 5s ease-in-out infinite, halo 3s ease-in-out infinite;
+    /* ---------- CINTA ---------- */
+    .cinta{background:linear-gradient(90deg,var(--azul),var(--grana));padding:16px 0;overflow:hidden;white-space:nowrap}
+    .cinta-track{display:inline-flex;gap:48px;animation:cinta 28s linear infinite;font-family:'Playfair Display',serif;font-size:20px;letter-spacing:3px;color:#fff}
+    .cinta-track span::after{content:"✦";margin-left:48px;color:var(--oro-claro)}
+    @keyframes cinta{to{transform:translateX(-50%)}}
+
+    /* ---------- BENEFICIOS ---------- */
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:48px}
+    .tarjeta{background:var(--noche-2);border:1px solid var(--linea);border-radius:18px;padding:32px 28px;transition:transform .35s,border-color .35s,box-shadow .35s;position:relative;overflow:hidden}
+    .tarjeta::before{content:"";position:absolute;left:0;top:0;width:100%;height:3px;background:linear-gradient(90deg,var(--azul),var(--grana));transform:scaleX(0);transform-origin:left;transition:transform .45s}
+    .tarjeta:hover{transform:translateY(-8px);border-color:rgba(201,162,39,.4);box-shadow:0 20px 40px rgba(0,0,0,.35)}
+    .tarjeta:hover::before{transform:scaleX(1)}
+    .icono{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:rgba(201,162,39,.12);color:var(--oro-claro);margin-bottom:20px}
+    .icono svg{width:26px;height:26px}
+    .tarjeta h3{font-size:18px;color:#fff;margin-bottom:8px}
+    .tarjeta p{font-size:14px;color:var(--suave);font-weight:300}
+
+    /* ---------- CÓMO FUNCIONA ---------- */
+    .funciona{background:var(--noche-2)}
+    .pasos{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:48px;position:relative}
+    .pasos::before{content:"";position:absolute;top:28px;left:16%;right:16%;height:1px;background:linear-gradient(90deg,var(--azul),var(--oro),var(--grana))}
+    .paso{text-align:center;position:relative}
+    .paso .num{width:56px;height:56px;margin:0 auto 18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:22px;color:var(--oro-claro);background:var(--noche);border:1px solid var(--oro)}
+    .paso h3{font-size:17px;color:#fff;margin-bottom:6px}
+    .paso p{font-size:14px;color:var(--suave);font-weight:300;max-width:280px;margin:0 auto}
+
+    /* ---------- HISTORIA ---------- */
+    .historia-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:56px;align-items:center}
+    .foto-marco{position:relative;border-radius:20px;overflow:hidden;box-shadow:0 30px 60px rgba(0,0,0,.5)}
+    .foto-marco img{width:100%;aspect-ratio:4/5;object-fit:cover;object-position:52% center;transition:transform .8s}
+    .foto-marco:hover img{transform:scale(1.06)}
+    .foto-marco::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(7,13,31,.85),transparent 55%)}
+    .foto-marco figcaption{position:absolute;left:22px;bottom:20px;z-index:1;font-size:13px;color:#d6dbe8}
+    .foto-marco figcaption strong{display:block;font-family:'Playfair Display',serif;font-size:22px;color:#fff}
+    .linea-tiempo{margin-top:30px;border-left:1px solid rgba(201,162,39,.4);padding-left:28px}
+    .hito{position:relative;padding-bottom:26px}
+    .hito:last-child{padding-bottom:0}
+    .hito::before{content:"";position:absolute;left:-34px;top:6px;width:11px;height:11px;border-radius:50%;background:var(--noche);border:2px solid var(--oro)}
+    .hito .anio{font-family:'Playfair Display',serif;font-size:20px;color:var(--oro-claro)}
+    .hito p{font-size:14px;color:var(--suave);font-weight:300}
+
+    /* ---------- VISTA PREVIA DEL CORREO ---------- */
+    .preview{background:var(--noche-2)}
+    .preview-grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+    .lista-secciones{margin-top:26px;display:grid;gap:12px}
+    .lista-secciones li{list-style:none;display:flex;gap:14px;align-items:center;font-size:15px;color:#d3d8e5;padding:14px 18px;border:1px solid var(--linea);border-radius:12px;background:rgba(255,255,255,.02);transition:border-color .3s,transform .3s}
+    .lista-secciones li:hover{border-color:rgba(201,162,39,.45);transform:translateX(6px)}
+    .lista-secciones b{font-family:'Playfair Display',serif;color:var(--oro-claro);font-size:18px;min-width:26px}
+    .correo{background:#fff;border-radius:16px;overflow:hidden;color:#070d1f;box-shadow:0 30px 70px rgba(0,0,0,.5);max-width:420px;margin:0 auto;animation:flotar 7s ease-in-out infinite}
+    @keyframes flotar{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-10px) rotate(0deg)}}
+    .correo-barra{display:flex;gap:6px;padding:10px 14px;background:#eef0f5}
+    .correo-barra i{width:10px;height:10px;border-radius:50%;background:#cfd4df}
+    .correo-head{background:#070d1f;text-align:center;padding:24px 16px 18px}
+    .correo-head img{width:52px;height:52px;border-radius:12px;margin:0 auto 10px;object-fit:cover;border:2px solid var(--oro)}
+    .correo-head strong{font-family:'Playfair Display',serif;color:#fff;letter-spacing:2px;font-size:20px}
+    .correo-franja{height:4px;background:linear-gradient(90deg,var(--azul) 50%,var(--grana) 50%)}
+    .correo-body{padding:22px 24px}
+    .correo-body small{font-size:10px;letter-spacing:2px;color:var(--grana);font-weight:700;text-transform:uppercase}
+    .correo-body h4{font-family:'Playfair Display',serif;font-size:20px;font-weight:600;margin:4px 0 8px}
+    .correo-body p{font-size:12px;color:#5b6377}
+    .correo-item{display:flex;gap:10px;margin-top:12px;font-size:12px;color:#3c4458}
+    .correo-item b{font-family:'Playfair Display',serif;color:var(--oro)}
+    .correo-cta{display:block;width:max-content;margin:18px auto 4px;padding:10px 22px;font-size:10px;letter-spacing:2px;font-weight:700;color:#fff;border-radius:6px;background:linear-gradient(90deg,var(--azul),var(--grana))}
+    .correo-pie{background:#070d1f;color:#8a91a3;text-align:center;font-size:10px;padding:14px}
+
+    /* ---------- FAQ ---------- */
+    .faq-lista{max-width:760px;margin:44px auto 0;display:grid;gap:12px}
+    details{border:1px solid var(--linea);border-radius:14px;background:var(--noche-2);transition:border-color .3s}
+    details[open]{border-color:rgba(201,162,39,.45)}
+    summary{list-style:none;cursor:pointer;padding:20px 24px;font-weight:500;color:#fff;display:flex;justify-content:space-between;align-items:center;gap:16px}
+    summary::-webkit-details-marker{display:none}
+    summary::after{content:"+";font-size:22px;color:var(--oro);transition:transform .3s}
+    details[open] summary::after{transform:rotate(45deg)}
+    details p{padding:0 24px 20px;color:var(--suave);font-size:14px;font-weight:300}
+
+    /* ---------- CTA FINAL ---------- */
+    .cta-final{position:relative;text-align:center;overflow:hidden;background:linear-gradient(120deg,var(--azul),var(--grana))}
+    .cta-final::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(255,255,255,.05) 0 60px,transparent 60px 120px);animation:franjas 20s linear infinite}
+    @keyframes franjas{to{background-position:240px 0}}
+    .cta-final .contenedor{position:relative}
+    .cta-final .titulo{font-size:clamp(30px,5vw,50px)}
+    .cta-final p{color:#f1e9ef;font-weight:300;margin-bottom:30px}
+    .btn-claro{display:inline-block;padding:16px 34px;border-radius:999px;background:#fff;color:var(--grana);font-weight:700;letter-spacing:2px;text-transform:uppercase;font-size:13px;transition:transform .25s,box-shadow .25s}
+    .btn-claro:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(0,0,0,.3)}
+
+    /* ---------- FOOTER ---------- */
+    footer{padding:48px 0 34px;border-top:1px solid var(--linea)}
+    footer .contenedor{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+    footer p{font-size:12px;color:#6b7389}
+
+    /* ---------- RESPONSIVE ---------- */
+    @media (max-width:900px){
+      .menu{display:none}
+      .hero .contenedor,.historia-grid,.preview-grid{grid-template-columns:1fr}
+      .grid-3,.pasos{grid-template-columns:1fr}
+      .pasos::before{display:none}
+      section{padding:72px 0}
+      .foto-marco img{aspect-ratio:16/10}
     }
-    @keyframes levitar { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-6px); } }
-    @keyframes halo {
-      0%,100% { box-shadow:0 10px 30px rgba(0,0,0,.45), 0 0 0 0 rgba(201,162,39,.0); }
-      50%     { box-shadow:0 10px 30px rgba(0,0,0,.45), 0 0 26px 2px rgba(201,162,39,.35); }
-    }
-
-    .eyebrow { font-size:11px; letter-spacing:5px; text-transform:uppercase; color:var(--oro); font-weight:500; }
-    .logo { font-family:'Playfair Display', serif; font-size:42px; font-weight:700; letter-spacing:2px; margin:8px 0 4px; color:#fff; }
-    .divisor { width:48px; height:2px; margin:16px auto 20px; background:linear-gradient(90deg, var(--azul), var(--grana)); border-radius:2px; }
-    h1 { font-size:17px; font-weight:500; color:#fff; margin-bottom:10px; }
-    p.sub { font-size:14px; font-weight:300; color:var(--suave); line-height:1.7; margin-bottom:28px; }
-
-    form { display:flex; flex-direction:column; gap:12px; }
-    input[type=email] {
-      width:100%; padding:15px 18px; font-size:15px; font-family:inherit; color:#fff;
-      background:rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.15); border-radius:12px; outline:none;
-      transition:border-color .3s, background .3s, box-shadow .3s;
-    }
-    input::placeholder { color:#7d869c; }
-    input[type=email]:focus { border-color:var(--oro); background:rgba(255,255,255,.09); box-shadow:0 0 0 4px rgba(201,162,39,.15); }
-
-    button {
-      position:relative; overflow:hidden;
-      padding:15px; font-size:14px; font-weight:600; letter-spacing:2px; text-transform:uppercase; font-family:inherit;
-      color:#fff; border:none; border-radius:12px; cursor:pointer;
-      background:linear-gradient(90deg, var(--azul), var(--grana));
-      transition:transform .25s, box-shadow .25s;
-    }
-    button::after {
-      content:""; position:absolute; top:0; left:-60%; width:40%; height:100%;
-      background:linear-gradient(110deg, transparent, rgba(255,255,255,.35), transparent);
-      animation:reflejo 3.5s ease-in-out infinite;
-    }
-    @keyframes reflejo { 0% { left:-60%; } 60%,100% { left:130%; } }
-    button:hover { transform:translateY(-2px); box-shadow:0 12px 28px rgba(165,0,68,.4); }
-    button:disabled { opacity:.6; cursor:wait; }
-
-    #estado { margin-top:18px; font-size:13px; min-height:20px; letter-spacing:.3px; }
-    .ok { color:var(--oro-claro); animation:subir .5s ease; }
-    .error { color:#ff8a9e; animation:sacudir .4s ease; }
-    @keyframes sacudir { 25% { transform:translateX(-5px); } 75% { transform:translateX(5px); } }
-    .pie { margin-top:24px; font-size:11px; color:#6b7389; letter-spacing:.3px; }
-
-    /* ---------- Responsive ---------- */
-    @media (max-width:820px) {
-      .card { grid-template-columns:1fr; max-width:480px; }
-      .foto { min-height:300px; }
-      .foto .leyenda h2 { font-size:26px; }
-      .linea-oro { top:auto; left:0; right:0; bottom:0; width:auto; height:2px;
-        background:linear-gradient(90deg, transparent, var(--oro), transparent); }
-      .panel { padding:40px 26px 32px; }
-      .logo { font-size:36px; }
-    }
-    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; opacity:1 !important; } }
+    @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}}
   </style>
 </head>
 <body>
-  <div class="luz a"></div>
-  <div class="luz b"></div>
-  <div class="franjas"></div>
 
-  <main class="card">
-    <!-- Columna izquierda: foto -->
-    <section class="foto">
-      <img src="Barcelona_Champions.jpg" alt="Jugadores del Barça celebrando el título en Berlín 2015">
-      <div class="leyenda">
-        <span class="eyebrow">Berlín · 2015</span>
-        <h2>La noche del triplete</h2>
-        <p>Revive la historia y sigue la actualidad del club con un boletín pensado para la afición.</p>
+  <!-- NAV -->
+  <nav id="nav">
+    <div class="contenedor">
+      <a href="#inicio" class="marca"><img src="Barcelona_Logo.jpg" alt="Escudo FC Barcelona" width="38" height="38">CULÉ ZONE</a>
+      <div class="menu">
+        <a href="#contenido">Contenido</a>
+        <a href="#funciona">Cómo funciona</a>
+        <a href="#historia">Historia</a>
+        <a href="#faq">Preguntas</a>
       </div>
-      <div class="linea-oro"></div>
-    </section>
+      <a href="#suscribirse" class="btn-nav">Suscribirme</a>
+    </div>
+  </nav>
 
-    <!-- Columna derecha: formulario -->
-    <section class="panel">
-      <div class="escudo reveal d1"><img src="Barcelona_Logo.jpg" alt="Escudo del FC Barcelona"></div>
-      <div class="eyebrow reveal d1">Newsletter blaugrana</div>
-      <div class="logo reveal d2">CULÉ ZONE</div>
-      <div class="divisor reveal d2"></div>
-      <h1 class="reveal d3">Más que un boletín</h1>
-      <p class="sub reveal d3">Análisis previo de cada partido, resultados y las noticias más relevantes del Barça, directamente en tu correo.</p>
+  <!-- HERO -->
+  <header class="hero" id="inicio">
+    <div class="hero-fondo"><img src="Barcelona_Champions.jpg" alt="" fetchpriority="high"></div>
+    <div class="contenedor">
+      <div>
+        <span class="eyebrow reveal">Newsletter blaugrana</span>
+        <h1 class="reveal r2">Vive el Barça <em>más allá del partido</em></h1>
+        <p class="lead reveal r3">Previas, resultados, análisis e historia del club en un boletín claro y puntual, pensado para la afición culé.</p>
+        <div class="datos reveal r4">
+          <div class="dato"><strong>1899</strong><span>Año de fundación</span></div>
+          <div class="dato"><strong>Semanal</strong><span>Frecuencia</span></div>
+          <div class="dato"><strong>Gratis</strong><span>Siempre</span></div>
+        </div>
+      </div>
 
-      <form id="form-suscripcion" class="reveal d4">
-        <input type="email" id="email" name="to_email" placeholder="Tu correo electrónico" required>
-        <button type="submit" id="btn">Suscribirme</button>
-      </form>
-      <div id="estado"></div>
-      <p class="pie reveal d5">Boletín de aficionados, no oficial · Puedes darte de baja cuando quieras</p>
-    </section>
-  </main>
+      <div class="suscripcion reveal r3" id="suscribirse">
+        <img class="escudo" src="Barcelona_Logo.jpg" alt="Escudo FC Barcelona" width="92" height="92">
+        <span class="eyebrow">Únete ahora</span>
+        <h2>Suscríbete al boletín</h2>
+        <p>Recibe un correo de bienvenida al instante.</p>
+        <form id="form-suscripcion">
+          <input type="email" id="email" name="to_email" placeholder="Tu correo electrónico" required autocomplete="email">
+          <button type="submit" class="btn" id="btn">Suscribirme</button>
+        </form>
+        <div id="estado" role="status"></div>
+        <p class="nota">Boletín de aficionados, no oficial · Baja en cualquier momento</p>
+      </div>
+    </div>
+    <div class="scroll-indicador" aria-hidden="true"></div>
+  </header>
+
+  <!-- CINTA -->
+  <div class="cinta" aria-hidden="true">
+    <div class="cinta-track">
+      <span>FORÇA BARÇA</span><span>MÉS QUE UN CLUB</span><span>CULÉ ZONE</span><span>BLAUGRANA</span>
+      <span>FORÇA BARÇA</span><span>MÉS QUE UN CLUB</span><span>CULÉ ZONE</span><span>BLAUGRANA</span>
+    </div>
+  </div>
+
+  <!-- BENEFICIOS -->
+  <section id="contenido">
+    <div class="contenedor">
+      <span class="eyebrow reveal">Lo que recibirás</span>
+      <h2 class="titulo reveal r2">Todo el Barça, sin ruido</h2>
+      <p class="bajada reveal r3">Seleccionamos lo importante para que estés al día en pocos minutos.</p>
+      <div class="grid-3">
+        <article class="tarjeta reveal r2">
+          <div class="icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
+          <h3>Previa de cada partido</h3>
+          <p>Contexto del rival, alineaciones probables y claves del encuentro antes del pitazo inicial.</p>
+        </article>
+        <article class="tarjeta reveal r3">
+          <div class="icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg></div>
+          <h3>Resultados y análisis</h3>
+          <p>Resumen de la jornada, estadísticas clave y lo que dejó cada partido.</p>
+        </article>
+        <article class="tarjeta reveal r4">
+          <div class="icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></div>
+          <h3>Noticias del club</h3>
+          <p>Fichajes, La Masia y la actualidad blaugrana más relevante de la semana.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- CÓMO FUNCIONA -->
+  <section class="funciona" id="funciona">
+    <div class="contenedor" style="text-align:center">
+      <span class="eyebrow reveal">Cómo funciona</span>
+      <h2 class="titulo reveal r2">Tres pasos y listo</h2>
+      <div class="pasos">
+        <div class="paso reveal r2"><div class="num">1</div><h3>Deja tu correo</h3><p>Solo necesitamos tu email, nada más.</p></div>
+        <div class="paso reveal r3"><div class="num">2</div><h3>Confirmación inmediata</h3><p>Recibes automáticamente un correo de bienvenida.</p></div>
+        <div class="paso reveal r4"><div class="num">3</div><h3>Disfruta cada semana</h3><p>El boletín llega a tu bandeja con lo mejor del Barça.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HISTORIA -->
+  <section id="historia">
+    <div class="contenedor historia-grid">
+      <figure class="foto-marco reveal">
+        <img src="Barcelona_Champions.jpg" alt="Jugadores del Barça celebrando en Berlín 2015" loading="lazy">
+        <figcaption><strong>Berlín 2015</strong>La noche del triplete</figcaption>
+      </figure>
+      <div>
+        <span class="eyebrow reveal">Historia</span>
+        <h2 class="titulo reveal r2">Momentos que nos definen</h2>
+        <p class="bajada reveal r3">Cada boletín incluye una mirada al pasado del club. Algunos hitos:</p>
+        <div class="linea-tiempo">
+          <div class="hito reveal r2"><div class="anio">1899</div><p>Fundación del club en Barcelona.</p></div>
+          <div class="hito reveal r3"><div class="anio">1957</div><p>Inauguración del Camp Nou.</p></div>
+          <div class="hito reveal r4"><div class="anio">1992</div><p>Primera Copa de Europa, en Wembley.</p></div>
+          <div class="hito reveal r4"><div class="anio">2009</div><p>El año del sextete.</p></div>
+          <div class="hito reveal r5"><div class="anio">2015</div><p>Triplete coronado con la final de Berlín.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VISTA PREVIA -->
+  <section class="preview">
+    <div class="contenedor preview-grid">
+      <div>
+        <span class="eyebrow reveal">Tu correo de bienvenida</span>
+        <h2 class="titulo reveal r2">Así luce lo que recibirás</h2>
+        <p class="bajada reveal r3">Diseñado con HTML y CSS inline para verse bien en Gmail, Outlook y el celular.</p>
+        <ul class="lista-secciones">
+          <li class="reveal r2"><b>01</b>Logo y encabezado</li>
+          <li class="reveal r3"><b>02</b>Saludo personalizado</li>
+          <li class="reveal r3"><b>03</b>Contenido destacado</li>
+          <li class="reveal r4"><b>04</b>Botón de llamado a la acción</li>
+          <li class="reveal r5"><b>05</b>Footer con baja de suscripción</li>
+        </ul>
+      </div>
+      <div class="reveal r3">
+        <div class="correo" aria-hidden="true">
+          <div class="correo-barra"><i></i><i></i><i></i></div>
+          <div class="correo-head"><img src="Barcelona_Logo.jpg" alt="" loading="lazy"><strong>CULÉ ZONE</strong></div>
+          <div class="correo-franja"></div>
+          <div class="correo-body">
+            <small>Suscripción confirmada</small>
+            <h4>Bienvenido a la comunidad culé</h4>
+            <p>Gracias por unirte. Desde hoy recibirás todo para seguir al Barça de cerca.</p>
+            <div class="correo-item"><b>01</b>Previa de cada partido</div>
+            <div class="correo-item"><b>02</b>Resultados y análisis</div>
+            <div class="correo-item"><b>03</b>Noticias del club</div>
+            <span class="correo-cta">VER PRÓXIMOS PARTIDOS</span>
+          </div>
+          <div class="correo-pie">CULÉ ZONE · Darse de baja</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq">
+    <div class="contenedor" style="text-align:center">
+      <span class="eyebrow reveal">Preguntas frecuentes</span>
+      <h2 class="titulo reveal r2">¿Tienes dudas?</h2>
+      <div class="faq-lista" style="text-align:left">
+        <details class="reveal r2"><summary>¿Cuánto cuesta la suscripción?</summary><p>Nada. El boletín es gratuito y siempre lo será.</p></details>
+        <details class="reveal r3"><summary>¿Con qué frecuencia recibiré correos?</summary><p>Un boletín semanal y, en semanas de partidos importantes, una previa especial.</p></details>
+        <details class="reveal r3"><summary>¿Puedo darme de baja?</summary><p>Sí, cada correo incluye un enlace para darte de baja con un solo clic.</p></details>
+        <details class="reveal r4"><summary>¿Es la newsletter oficial del club?</summary><p>No. CULÉ ZONE es un boletín hecho por aficionados y no está afiliado al FC Barcelona.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA FINAL -->
+  <section class="cta-final">
+    <div class="contenedor">
+      <span class="eyebrow reveal" style="color:var(--oro-claro)">Únete a la afición</span>
+      <h2 class="titulo reveal r2">Més que un club, més que un boletín</h2>
+      <p class="reveal r3">Tu próxima previa está a un correo de distancia.</p>
+      <a href="#suscribirse" class="btn-claro reveal r4">Quiero suscribirme</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="contenedor">
+      <a href="#inicio" class="marca"><img src="Barcelona_Logo.jpg" alt="" width="38" height="38" loading="lazy">CULÉ ZONE</a>
+      <p>© 2026 CULÉ ZONE · Boletín de aficionados, no oficial · Bogotá, Colombia</p>
+    </div>
+  </footer>
 
   <script>
     const PUBLIC_KEY  = "Jag4dbWrecPbOHQAi";
     const SERVICE_ID  = "service_t0uh4ra";
     const TEMPLATE_ID = "template_m3s0i5a";
 
-    emailjs.init({ publicKey: PUBLIC_KEY });
+    // Nav sólida al hacer scroll
+    const nav = document.getElementById("nav");
+    const alScroll = () => nav.classList.toggle("solida", window.scrollY > 40);
+    window.addEventListener("scroll", alScroll, { passive: true });
+    alScroll();
 
-    for (let i = 0; i < 28; i++) {
-      const p = document.createElement("div");
-      p.className = "particula";
-      p.style.left = Math.random() * 100 + "vw";
-      p.style.top = (20 + Math.random() * 80) + "vh";
-      p.style.animationDuration = (5 + Math.random() * 6) + "s";
-      p.style.animationDelay = (-Math.random() * 10) + "s";
-      document.body.appendChild(p);
-    }
+    // Animaciones de aparición
+    const observer = new IntersectionObserver((entradas) => {
+      entradas.forEach(e => { if (e.isIntersecting) { e.target.classList.add("visible"); observer.unobserve(e.target); } });
+    }, { threshold: 0.15 });
+    document.querySelectorAll(".reveal").forEach(el => observer.observe(el));
+
+    // Formulario + EmailJS
+    window.addEventListener("load", () => emailjs.init({ publicKey: PUBLIC_KEY }));
 
     const form = document.getElementById("form-suscripcion");
     const btn = document.getElementById("btn");
