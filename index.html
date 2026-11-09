@@ -3,78 +3,163 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GLASÉ · Suscríbete</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <!-- SDK de EmailJS -->
+  <title>CULÉ ZONE · Suscríbete</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --azul:#004d98; --grana:#a50044; --oro:#edbb00; --noche:#0b1530; }
+    * { box-sizing:border-box; margin:0; padding:0; }
     body {
-      font-family: 'Inter', sans-serif;
-      min-height: 100vh;
-      display: flex; align-items: center; justify-content: center;
-      background: linear-gradient(135deg, #1a1a1a 0%, #3a2a1f 100%);
-      padding: 16px;
+      font-family:'Inter', sans-serif;
+      min-height:100vh; overflow-x:hidden;
+      display:flex; align-items:center; justify-content:center;
+      padding:16px; position:relative;
+      background:var(--noche);
     }
+
+    /* Franjas blaugrana en movimiento */
+    .franjas {
+      position:fixed; inset:-50%;
+      background:repeating-linear-gradient(90deg,
+        var(--azul) 0 80px, var(--grana) 80px 160px);
+      transform:rotate(-12deg);
+      animation:mover 12s linear infinite;
+      opacity:.85;
+    }
+    @keyframes mover { from { background-position:0 0; } to { background-position:320px 0; } }
+    .velo { position:fixed; inset:0; background:radial-gradient(circle at center, rgba(11,21,48,.35), rgba(11,21,48,.9)); }
+
+    /* Balones flotando */
+    .balon { position:fixed; bottom:-60px; font-size:32px; animation:subir linear infinite; opacity:.8; z-index:1; }
+    @keyframes subir {
+      0%   { transform:translateY(0) rotate(0deg); }
+      100% { transform:translateY(-115vh) rotate(720deg); }
+    }
+
+    /* Tarjeta */
     .card {
-      background: #fffaf5;
-      max-width: 440px; width: 100%;
-      border-radius: 18px;
-      padding: 40px 32px;
-      text-align: center;
-      box-shadow: 0 20px 50px rgba(0,0,0,.35);
+      position:relative; z-index:2;
+      background:rgba(255,255,255,.97);
+      max-width:440px; width:100%;
+      border-radius:20px; padding:40px 32px; text-align:center;
+      box-shadow:0 25px 60px rgba(0,0,0,.5);
+      border-top:6px solid var(--oro);
+      animation:entrar .9s cubic-bezier(.2,1.4,.4,1) both;
     }
+    @keyframes entrar { from { opacity:0; transform:translateY(60px) scale(.9); } to { opacity:1; transform:none; } }
+
+    .escudo-texto {
+      width:84px; height:84px; margin:0 auto 14px;
+      border-radius:50%;
+      background:conic-gradient(var(--azul) 0 25%, var(--grana) 0 50%, var(--azul) 0 75%, var(--grana) 0);
+      display:flex; align-items:center; justify-content:center;
+      font-size:40px;
+      animation:girar 6s linear infinite;
+      box-shadow:0 0 0 4px var(--oro);
+    }
+    .escudo-texto span { animation:girar 6s linear infinite reverse; display:inline-block; }
+    @keyframes girar { to { transform:rotate(360deg); } }
+
     .logo {
-      font-family: 'Playfair Display', serif;
-      font-size: 36px; letter-spacing: 6px; color: #1a1a1a;
+      font-family:'Bebas Neue', sans-serif; font-size:52px; letter-spacing:4px; line-height:1;
+      background:linear-gradient(90deg, var(--azul), var(--grana), var(--oro), var(--azul));
+      background-size:300% 100%;
+      -webkit-background-clip:text; background-clip:text; color:transparent;
+      animation:brillo 4s linear infinite;
     }
-    .logo span { color: #b8864b; }
-    .tag { font-size: 12px; letter-spacing: 3px; color: #b8864b; margin: 6px 0 24px; text-transform: uppercase; }
-    h1 { font-size: 22px; color: #1a1a1a; margin-bottom: 10px; }
-    p.sub { font-size: 14px; color: #6b5e53; line-height: 1.6; margin-bottom: 26px; }
-    form { display: flex; flex-direction: column; gap: 12px; }
+    @keyframes brillo { to { background-position:300% 0; } }
+    .tag { font-size:12px; letter-spacing:3px; color:var(--grana); margin:6px 0 22px; text-transform:uppercase; font-weight:600; }
+    h1 { font-size:21px; color:var(--noche); margin-bottom:10px; }
+    p.sub { font-size:14px; color:#55607a; line-height:1.6; margin-bottom:24px; }
+
+    form { display:flex; flex-direction:column; gap:12px; }
     input[type=email] {
-      padding: 14px 16px; font-size: 15px;
-      border: 1.5px solid #d9cbbd; border-radius: 10px;
-      background: #fff; outline: none; transition: border .2s;
+      padding:14px 16px; font-size:15px;
+      border:2px solid #d5dbe8; border-radius:12px; outline:none;
+      transition:border .25s, transform .25s, box-shadow .25s;
     }
-    input[type=email]:focus { border-color: #b8864b; }
+    input[type=email]:focus { border-color:var(--azul); transform:scale(1.02); box-shadow:0 6px 18px rgba(0,77,152,.2); }
     button {
-      padding: 14px; font-size: 15px; font-weight: 600;
-      background: #1a1a1a; color: #fff;
-      border: none; border-radius: 10px; cursor: pointer;
-      transition: background .2s;
+      padding:15px; font-size:16px; font-weight:800; letter-spacing:1px;
+      color:#fff; border:none; border-radius:12px; cursor:pointer;
+      background:linear-gradient(90deg, var(--azul), var(--grana), var(--azul));
+      background-size:200% 100%;
+      animation:latido 2s ease-in-out infinite;
+      transition:background-position .5s, transform .2s;
     }
-    button:hover { background: #b8864b; }
-    button:disabled { opacity: .6; cursor: wait; }
-    #estado { margin-top: 16px; font-size: 14px; min-height: 20px; }
-    .ok { color: #2e7d32; }
-    .error { color: #c62828; }
-    small { display: block; margin-top: 22px; font-size: 11px; color: #9a8b7e; }
+    button:hover { background-position:100% 0; transform:translateY(-2px); }
+    button:active { transform:scale(.97); }
+    button:disabled { opacity:.6; cursor:wait; animation:none; }
+    @keyframes latido {
+      0%,100% { box-shadow:0 0 0 0 rgba(165,0,68,.5); }
+      50%     { box-shadow:0 0 0 12px rgba(165,0,68,0); }
+    }
+
+    #estado { margin-top:16px; font-size:14px; min-height:20px; font-weight:600; }
+    .ok { color:#15803d; animation:pop .5s ease; }
+    .error { color:#dc2626; animation:sacudir .4s ease; }
+    @keyframes pop { 0% { transform:scale(.5); opacity:0; } 70% { transform:scale(1.15); } 100% { transform:scale(1); opacity:1; } }
+    @keyframes sacudir { 25% { transform:translateX(-6px); } 75% { transform:translateX(6px); } }
+    small { display:block; margin-top:20px; font-size:11px; color:#8a93a8; }
+
+    /* Confeti al suscribirse */
+    .confeti { position:fixed; top:-12px; width:10px; height:14px; z-index:3; animation:caer linear forwards; }
+    @keyframes caer { to { transform:translateY(110vh) rotate(720deg); } }
+
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; } }
   </style>
 </head>
 <body>
+  <div class="franjas"></div>
+  <div class="velo"></div>
+
   <div class="card">
-    <div class="logo">GLAS<span>É</span></div>
-    <div class="tag">Zapatería</div>
-    <h1>Únete a nuestra comunidad</h1>
-    <p class="sub">Recibe primero los nuevos lanzamientos, descuentos exclusivos y novedades de temporada.</p>
+    <div class="escudo-texto"><span>⚽</span></div>
+    <div class="logo">CULÉ ZONE</div>
+    <div class="tag">Newsletter blaugrana</div>
+    <h1>¡Únete a la comunidad culé!</h1>
+    <p class="sub">Previas de cada partido, resultados, noticias y curiosidades del Barça directo a tu correo. Força Barça! 💙❤️</p>
 
     <form id="form-suscripcion">
       <input type="email" id="email" name="to_email" placeholder="tucorreo@ejemplo.com" required>
-      <button type="submit" id="btn">Suscribirme</button>
+      <button type="submit" id="btn">¡QUIERO SER CULÉ!</button>
     </form>
     <div id="estado"></div>
-    <small>Solo te escribiremos con tu permiso. Puedes darte de baja cuando quieras.</small>
+    <small>Boletín de fans, no oficial. Puedes darte de baja cuando quieras.</small>
   </div>
 
   <script>
-    // ⚠️ Reemplaza estos 3 valores con los de tu cuenta de EmailJS
     const PUBLIC_KEY  = "Jag4dbWrecPbOHQAi";
     const SERVICE_ID  = "service_t0uh4ra";
     const TEMPLATE_ID = "template_m3s0i5a";
 
     emailjs.init({ publicKey: PUBLIC_KEY });
+
+    // Balones flotando de fondo
+    for (let i = 0; i < 10; i++) {
+      const b = document.createElement("div");
+      b.className = "balon";
+      b.textContent = "⚽";
+      b.style.left = Math.random() * 100 + "vw";
+      b.style.fontSize = (18 + Math.random() * 26) + "px";
+      b.style.animationDuration = (8 + Math.random() * 10) + "s";
+      b.style.animationDelay = (-Math.random() * 15) + "s";
+      document.body.appendChild(b);
+    }
+
+    function lanzarConfeti() {
+      const colores = ["#004d98", "#a50044", "#edbb00", "#ffffff"];
+      for (let i = 0; i < 90; i++) {
+        const c = document.createElement("div");
+        c.className = "confeti";
+        c.style.left = Math.random() * 100 + "vw";
+        c.style.background = colores[i % colores.length];
+        c.style.animationDuration = (1.8 + Math.random() * 2) + "s";
+        c.style.animationDelay = (Math.random() * 0.5) + "s";
+        document.body.appendChild(c);
+        setTimeout(() => c.remove(), 4500);
+      }
+    }
 
     const form = document.getElementById("form-suscripcion");
     const btn = document.getElementById("btn");
@@ -85,24 +170,25 @@
       const email = document.getElementById("email").value.trim();
 
       btn.disabled = true;
-      btn.textContent = "Enviando...";
+      btn.textContent = "⚽ Enviando...";
       estado.textContent = "";
       estado.className = "";
 
       emailjs.send(SERVICE_ID, TEMPLATE_ID, { to_email: email })
         .then(function () {
-          estado.textContent = "¡Listo! Revisa tu bandeja de entrada 📩";
+          estado.textContent = "¡GOOOL! Revisa tu bandeja de entrada 📩";
           estado.className = "ok";
+          lanzarConfeti();
           form.reset();
         })
         .catch(function (err) {
           console.error(err);
-          estado.textContent = "No se pudo enviar. Intenta de nuevo.";
+          estado.textContent = "Fuera de juego 😬 No se pudo enviar, intenta de nuevo.";
           estado.className = "error";
         })
         .finally(function () {
           btn.disabled = false;
-          btn.textContent = "Suscribirme";
+          btn.textContent = "¡QUIERO SER CULÉ!";
         });
     });
   </script>
